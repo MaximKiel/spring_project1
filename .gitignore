@@ -39,3 +39,4 @@ build/
 
 /src/main/java/org/library/example
 database.properties
+initDB.sql
