@@ -1,6 +1,7 @@
 package org.library.dao;
 
 import org.library.model.Book;
+import org.library.model.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,6 +28,11 @@ public class BookDAO {
                 new BeanPropertyRowMapper<>(Book.class)).stream().findAny().orElse(null);
     }
 
+    public Person getOwner(int id) {
+        return jdbcTemplate.query("SELECT * FROM person p JOIN book b ON p.id = b.person_id WHERE b.id=?", new Object[]{id},
+                new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
+    }
+
     public void save(Book book) {
         jdbcTemplate.update("INSERT INTO book(title, author_name, publish_year) VALUES (?, ?, ?)",
                 book.getTitle(), book.getAuthorName(), book.getPublishYear());
@@ -39,5 +45,13 @@ public class BookDAO {
 
     public void delete(int id) {
         jdbcTemplate.update("DELETE FROM book WHERE id=?", id);
+    }
+
+    public void release(int id) {
+        jdbcTemplate.update("UPDATE book SET person_id=NULL WHERE id=?", id);
+    }
+
+    public void assign(int id, Person person) {
+        jdbcTemplate.update("UPDATE book SET person_id=? WHERE id=?", person.getId(), id);
     }
 }
