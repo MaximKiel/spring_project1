@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class BookDAO {
@@ -26,11 +27,6 @@ public class BookDAO {
     public Book show(int id) {
         return jdbcTemplate.query("SELECT * FROM book WHERE id=?", new Object[]{id},
                 new BeanPropertyRowMapper<>(Book.class)).stream().findAny().orElse(null);
-    }
-
-    public Person getOwner(int id) {
-        return jdbcTemplate.query("SELECT * FROM person p JOIN book b ON p.id = b.person_id WHERE b.id=?", new Object[]{id},
-                new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
     }
 
     public void save(Book book) {
@@ -53,5 +49,15 @@ public class BookDAO {
 
     public void assign(int id, Person person) {
         jdbcTemplate.update("UPDATE book SET person_id=? WHERE id=?", person.getId(), id);
+    }
+
+//    public Person getOwner(int id) {
+//        return jdbcTemplate.query("SELECT * FROM person p JOIN book b ON p.id = b.person_id WHERE b.id=?", new Object[]{id},
+//                new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
+//    }
+
+    public Optional<Person> getBookOwner(int id) {
+        return jdbcTemplate.query("SELECT person.* FROM book JOIN person ON book.person_id = person.id WHERE book.id = ?",
+                        new Object[]{id}, new BeanPropertyRowMapper<>(Person.class)).stream().findAny();
     }
 }

@@ -11,16 +11,20 @@
     <p>Человек пока не взял ни одной книги</p>
 </div>
 
-<div th:each="book : ${books}"
-     th:unless="${books.isEmpty()}">
-    <br/>
+<div th:if="${!books.isEmpty()}">
     <hr/>
-    <p th:text="${book.getTitle() + ', ' + book.getAuthorName() + ', ' + book.getPublishYear()}">VALUE</p>
+    <b>Книги:</b>
+    <br/>
+    <table th:each="book : ${books}">
+        <tr th:text="${book.getTitle() + ', ' + book.getAuthorName() + ', ' + book.getPublishYear()}">book</tr>
+    </table>
 </div>
 
 <hr/>
 
-<a th:href="@{/people/{id}/edit(id=${person.getId()})}">Редактировать</a>
+<form th:method="GET" th:action="@{/people/{id}/edit(id=${person.getId()})}">
+    <input type="submit" value="Редактировать"/>
+</form>
 
 <form th:method="DELETE" th:action="@{/people/{id}(id=${person.getId()})}">
     <input type="submit" value="Удалить"/>
